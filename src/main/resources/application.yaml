@@ -1,3 +1,35 @@
 spring:
+  profiles:
+    active: dev
   application:
-    name: E-commercePlatform
+    name: E-commerce Platform
+
+  datasource:
+    url: ${ENVIRONMENT_VARIABLE_NAME:default_value}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:password}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+server:
+  port: 8080
+  servlet:
+    context-path: /maitraStore
+
+logging:
+  level:
+    root: INFO
+    com.DhrubaStudio.E_commercePlatform: DEBUG
+    org.springframework.security: TRACE
+    org.springframework.security.web: TRACE
+    org.springframework.web: DEBUG
+    org.springframework.boot.autoconfigure: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
