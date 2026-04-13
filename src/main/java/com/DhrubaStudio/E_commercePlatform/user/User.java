@@ -81,6 +81,14 @@ public class User {
         this.password = password;
     }
 
+    public CustomerProfile getCustomerProfile() {
+        return customerProfile;
+    }
+
+    public void setCustomerProfile(CustomerProfile customerProfile) {
+        this.customerProfile = customerProfile;
+    }
+
     public Role getRole() {
         return role;
     }
