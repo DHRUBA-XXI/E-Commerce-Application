@@ -62,6 +62,25 @@ public class InventoryService {
         return products;
     }
 
+    public ProductResponseDTO updateProduct(long productId,ProductRequestDTO request) {
+
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
+            throw new IllegalArgumentException("Product with id " + productId + " does not exist.");
+        }
+
+        Category requestProductCategory = categoryRepository.findById(request.getCategoryId()).orElse(null);
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setStockQuantity(request.getStockQuantity());
+        product.setCategory(requestProductCategory);
+
+        Product updatedProduct = productRepository.save(product);
+        return createProductResponseDTO(updatedProduct);
+    }
+
 
     private ProductResponseDTO createProductResponseDTO(Product product) {
 

@@ -54,4 +54,14 @@ public class InventoryController {
         }
     }
 
+    @PutMapping("/products/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long id,@RequestBody ProductRequestDTO request) {
+        try{
+            ProductResponseDTO updatedProduct = inventoryService.updateProduct(id, request);
+            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+        } catch(IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

@@ -1,17 +1,21 @@
 package com.DhrubaStudio.E_commercePlatform.order;
-
 import com.DhrubaStudio.E_commercePlatform.inventory.Product;
 import com.DhrubaStudio.E_commercePlatform.inventory.ProductRepository;
 import com.DhrubaStudio.E_commercePlatform.order.dto.OrderItemRequestDTO;
+import com.DhrubaStudio.E_commercePlatform.order.dto.OrderItemResponseDTO;
 import com.DhrubaStudio.E_commercePlatform.order.dto.OrderRequestDTO;
+import com.DhrubaStudio.E_commercePlatform.order.dto.OrderResponseDTO;
 import com.DhrubaStudio.E_commercePlatform.user.User;
 import com.DhrubaStudio.E_commercePlatform.user.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class OrderService {
@@ -32,7 +36,6 @@ public class OrderService {
     @Transactional
     public Order processCheckout(OrderRequestDTO request) {
 
-        // 1. Verify the User exists
         User buyer = userRepository.findById(request.getUserId()).orElse(null);
         if(buyer == null){
             throw new IllegalArgumentException("User ID: " + request.getUserId() + " not found.");
@@ -71,5 +74,39 @@ public class OrderService {
 
         order.setTotalAmount(totalOrderPrice);
         return orderRepository.save(order);
+    }
+
+    public List<OrderResponseDTO> getOrderHistory(Long userId) {
+
+        User user = userRepository.findById(userId).orElse(null);
+        if(user == null){
+            throw new IllegalArgumentException("User ID: " + userId + " not found.");
+        }
+
+        List<OrderResponseDTO> responseList = new ArrayList<>();
+
+        List<Order> orders = orderRepository.findByUserId(userId);
+        for (Order order : orders) {
+
+            List<OrderItemResponseDTO> items = new ArrayList<>();
+            for (OrderItem orderItem : order.getOrderItems()) {
+                OrderItemResponseDTO itemDto = new OrderItemResponseDTO();
+
+                itemDto.setProductId(orderItem.getProduct().getId());
+                itemDto.setProductName(orderItem.getProduct().getName());
+                itemDto.setQuantity(orderItem.getQuantity());
+                itemDto.setPriceAtPurchase(orderItem.getPriceAtPurchase());
+                itemDto.setSubTotal(orderItem.getPriceAtPurchase().multiply(new BigDecimal(orderItem.getQuantity())));
+
+                items.add(itemDto);
+            }
+
+            OrderResponseDTO orderResponseDTO = new OrderResponseDTO(
+                    order.getId(), order.getOrderDate(), order.getTotalAmount(),
+                    order.getStatus().name(), items);
+
+            responseList.add(orderResponseDTO);
+        }
+        return responseList;
     }
 }
