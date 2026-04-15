@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -62,6 +63,17 @@ public class InventoryController {
         } catch(IllegalArgumentException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/products/search")
+    public ResponseEntity<List<ProductResponseDTO>> searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Long categoryId) {
+
+        List<ProductResponseDTO> searchResults = inventoryService.searchProducts(keyword, maxPrice, categoryId);
+
+        return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }
 
 }

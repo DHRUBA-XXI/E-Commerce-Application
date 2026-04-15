@@ -5,6 +5,7 @@ import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +53,9 @@ public class InventoryService {
     public List<ProductResponseDTO> getAllProducts() {
 
         List<ProductResponseDTO>  products = new ArrayList<>();
-        List<Product> allProducts = productRepository.findAll();
+        List<Product> rawProducts = productRepository.findAll();
 
-        for (Product product : allProducts) {
+        for (Product product : rawProducts) {
             ProductResponseDTO responseDTO = createProductResponseDTO(product);
             products.add(responseDTO);
         }
@@ -79,6 +80,20 @@ public class InventoryService {
 
         Product updatedProduct = productRepository.save(product);
         return createProductResponseDTO(updatedProduct);
+    }
+
+    public List<ProductResponseDTO> searchProducts(String keyword, BigDecimal maxPrice, Long categoryId) {
+
+        List<Product> rawProducts = productRepository.searchAndFilterProducts(keyword, maxPrice, categoryId);
+
+        List<ProductResponseDTO> responseDTOs = new ArrayList<>();
+
+        for (Product product : rawProducts) {
+            ProductResponseDTO dto = createProductResponseDTO(product);
+            responseDTOs.add(dto);
+        }
+
+        return responseDTOs;
     }
 
 
