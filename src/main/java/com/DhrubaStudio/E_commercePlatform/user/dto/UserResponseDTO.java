@@ -1,4 +1,4 @@
-package com.DhrubaStudio.E_commercePlatform.user;
+package com.DhrubaStudio.E_commercePlatform.user.dto;
 
 public class UserResponseDTO {
     private Long id;

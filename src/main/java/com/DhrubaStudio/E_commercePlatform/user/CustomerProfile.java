@@ -37,6 +37,12 @@ public class CustomerProfile {
         this.shippingAddress = shippingAddress;
     }
 
+    public boolean isProfileComplete() {
+        return firstName != null && !firstName.trim().isEmpty() &&
+                lastName != null && !lastName.trim().isEmpty() &&
+                shippingAddress != null && !shippingAddress.trim().isEmpty();
+    }
+
     public Long getId() {
         return id;
     }

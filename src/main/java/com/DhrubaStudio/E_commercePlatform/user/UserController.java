@@ -1,12 +1,16 @@
 package com.DhrubaStudio.E_commercePlatform.user;
 
+import com.DhrubaStudio.E_commercePlatform.user.dto.ProfileResponseDTO;
+import com.DhrubaStudio.E_commercePlatform.user.dto.ProfileUpdateRequestDTO;
+import com.DhrubaStudio.E_commercePlatform.user.dto.UserResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/users")
@@ -31,4 +35,22 @@ public class UserController {
 
          return new ResponseEntity<>(userResponseDTO, HttpStatus.CREATED);
      }
+
+     @PatchMapping("/update-myProfile")
+     public ResponseEntity<?> updateMyProfile(@AuthenticationPrincipal UserDetails userDetails,
+                                             @RequestBody ProfileUpdateRequestDTO request) {
+         String email = userDetails.getUsername();
+         User updatedUser = userService.updateCustomerProfile(email, request);
+         CustomerProfile profile = updatedUser.getCustomerProfile();
+
+         ProfileResponseDTO responseDTO = new ProfileResponseDTO(
+                 updatedUser.getEmail(),
+                 profile.getFirstName(),
+                 profile.getLastName(),
+                 profile.getShippingAddress(),
+                 LocalDateTime.now());
+
+         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
+     }
+
 }

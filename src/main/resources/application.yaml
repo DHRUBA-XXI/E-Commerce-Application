@@ -23,6 +23,10 @@ server:
   servlet:
     context-path: /maitraStore
 
+security:
+  jwt:
+    secret-key: ${SECRET_KEY_FOR_JWT_SIGNING}
+
 logging:
   level:
     root: INFO

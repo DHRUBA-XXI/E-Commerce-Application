@@ -20,15 +20,14 @@ spring:
       repositories:
         enabled: false
 
-  security:
-    user:
-      name: admin
-      password: admin123
-
 server:
   port:
   servlet:
     context-path: /maitraStore
+
+security:
+  jwt:
+    secret-key:
 
 logging:
   level:

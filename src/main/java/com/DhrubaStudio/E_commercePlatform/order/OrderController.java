@@ -5,6 +5,8 @@ import com.DhrubaStudio.E_commercePlatform.order.dto.OrderResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,19 +23,22 @@ public class OrderController {
      }
 
      @PostMapping("/checkout")
-     public ResponseEntity<?> checkout(@RequestBody OrderRequestDTO orderRequestDTO) {
+     public ResponseEntity<?> checkout(@AuthenticationPrincipal UserDetails userDetails,
+                                       @RequestBody OrderRequestDTO orderRequestDTO) {
 
-         Order savedOrder = orderService.processCheckout(orderRequestDTO);
+         String email = userDetails.getUsername();
+         Order savedOrder = orderService.processCheckout(email,orderRequestDTO);
          String message = "Checkout successful. Order ID: "+ savedOrder.getId() +
                      " .Total Amount: "+ savedOrder.getTotalAmount();
 
          return new ResponseEntity<>(message, HttpStatus.CREATED);
      }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<?> getUserOrderHistory(@PathVariable Long userId) {
+    @GetMapping("/orderHistory")
+    public ResponseEntity<?> getUserOrderHistory(@AuthenticationPrincipal UserDetails userDetails) {
 
-         List<OrderResponseDTO> history = orderService.getOrderHistory(userId);
+         String email = userDetails.getUsername();
+         List<OrderResponseDTO> history = orderService.getOrderHistory(email);
 
          return new ResponseEntity<>(history, HttpStatus.OK);
     }

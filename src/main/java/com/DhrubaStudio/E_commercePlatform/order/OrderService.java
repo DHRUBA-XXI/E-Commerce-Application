@@ -34,11 +34,15 @@ public class OrderService {
     }
 
     @Transactional
-    public Order processCheckout(OrderRequestDTO request) {
+    public Order processCheckout(String email,OrderRequestDTO request) {
 
-        User buyer = userRepository.findById(request.getUserId()).orElse(null);
+        User buyer = userRepository.findByEmail(email).orElse(null);
         if(buyer == null){
-            throw new IllegalArgumentException("User ID: " + request.getUserId() + " not found.");
+            throw new IllegalArgumentException("User: " + email  + " not found.");
+        }
+
+        if(!buyer.getCustomerProfile().isProfileComplete()) {
+            throw new IllegalStateException("User: " + email + " profile data is incomplete.");
         }
 
         Order order = new Order();
@@ -76,16 +80,16 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public List<OrderResponseDTO> getOrderHistory(Long userId) {
+    public List<OrderResponseDTO> getOrderHistory(String email) {
 
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
         if(user == null){
-            throw new IllegalArgumentException("User ID: " + userId + " not found.");
+            throw new IllegalArgumentException("User: " + email + " not found.");
         }
 
         List<OrderResponseDTO> responseList = new ArrayList<>();
 
-        List<Order> orders = orderRepository.findByUserId(userId);
+        List<Order> orders = orderRepository.findByUserId(user.getId());
         for (Order order : orders) {
 
             List<OrderItemResponseDTO> items = new ArrayList<>();

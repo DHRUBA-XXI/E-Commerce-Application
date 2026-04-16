@@ -4,16 +4,13 @@ import java.util.List;
 
 public class OrderRequestDTO {
 
-    private Long userId;
     private List<OrderItemRequestDTO> items;
 
     public OrderRequestDTO() {}
 
-    public Long getUserId() {
-        return userId; }
-
-    public void setUserId(Long userId) {
-        this.userId = userId; }
+    public OrderRequestDTO(List<OrderItemRequestDTO> items) {
+        this.items = items;
+    }
 
     public List<OrderItemRequestDTO> getItems() {
         return items; }
