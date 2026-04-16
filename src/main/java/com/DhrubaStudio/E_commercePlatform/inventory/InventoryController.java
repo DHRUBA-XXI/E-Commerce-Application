@@ -25,44 +25,40 @@ public class InventoryController {
     public ResponseEntity<List<Category>> getAllCategories() {
 
         List<Category> categories = inventoryService.getAllCategories();
+
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @PostMapping("/categories")
     public ResponseEntity<?> CreateCategory(@RequestBody Category category) {
-        try{
-            Category newCategory = inventoryService.createCategory(category);
-            return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
-        } catch(IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+
+        Category newCategory = inventoryService.createCategory(category);
+
+        return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }
 
     @GetMapping("/products")
     public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
 
         List<ProductResponseDTO> allProducts = inventoryService.getAllProducts();
+
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
     @PostMapping("/products")
     public ResponseEntity<?> CreateProduct(@RequestBody ProductRequestDTO request) {
-        try{
-            Product newProduct = inventoryService.createProduct(request);
-            return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
-        } catch(IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+
+        Product newProduct = inventoryService.createProduct(request);
+
+        return new ResponseEntity<>(newProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable Long id,@RequestBody ProductRequestDTO request) {
-        try{
-            ProductResponseDTO updatedProduct = inventoryService.updateProduct(id, request);
-            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-        } catch(IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+
+        ProductResponseDTO updatedProduct = inventoryService.updateProduct(id, request);
+
+        return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
     }
 
     @GetMapping("/products/search")
@@ -75,5 +71,4 @@ public class InventoryController {
 
         return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }
-
 }

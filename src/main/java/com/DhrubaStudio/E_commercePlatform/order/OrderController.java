@@ -22,24 +22,20 @@ public class OrderController {
 
      @PostMapping("/checkout")
      public ResponseEntity<?> checkout(@RequestBody OrderRequestDTO orderRequestDTO) {
-         try{
-             Order savedOrder = orderService.processCheckout(orderRequestDTO);
-             String message = "Checkout successful. Order ID: "+ savedOrder.getId() +
+
+         Order savedOrder = orderService.processCheckout(orderRequestDTO);
+         String message = "Checkout successful. Order ID: "+ savedOrder.getId() +
                      " .Total Amount: "+ savedOrder.getTotalAmount();
-             return new ResponseEntity<>(message, HttpStatus.CREATED);
-         } catch(IllegalArgumentException e){
-             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-         }
+
+         return new ResponseEntity<>(message, HttpStatus.CREATED);
      }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getUserOrderHistory(@PathVariable Long userId) {
-        try {
-            List<OrderResponseDTO> history = orderService.getOrderHistory(userId);
-            return new ResponseEntity<>(history, HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+
+         List<OrderResponseDTO> history = orderService.getOrderHistory(userId);
+
+         return new ResponseEntity<>(history, HttpStatus.OK);
     }
 
 }
