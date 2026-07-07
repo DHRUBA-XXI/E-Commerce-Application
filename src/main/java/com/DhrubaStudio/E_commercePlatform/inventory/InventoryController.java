@@ -1,5 +1,6 @@
 package com.DhrubaStudio.E_commercePlatform.inventory;
 
+import com.DhrubaStudio.E_commercePlatform.inventory.dto.PagedProductResponseDTO;
 import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductRequestDTO;
 import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,12 +63,17 @@ public class InventoryController {
     }
 
     @GetMapping("/products/search")
-    public ResponseEntity<List<ProductResponseDTO>> searchProducts(
+    public ResponseEntity<PagedProductResponseDTO<ProductResponseDTO>> searchProducts(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Long categoryId) {
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
 
-        List<ProductResponseDTO> searchResults = inventoryService.searchProducts(keyword, maxPrice, categoryId);
+    PagedProductResponseDTO<ProductResponseDTO> searchResults = inventoryService.searchProducts(
+                keyword, maxPrice, categoryId, pageNo, pageSize, sortBy, sortDir);
 
         return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }

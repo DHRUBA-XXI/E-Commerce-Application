@@ -1,5 +1,7 @@
 package com.DhrubaStudio.E_commercePlatform.inventory;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,7 +19,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "(:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
             "(:maxPrice IS NULL OR p.price <= :maxPrice) AND " +
             "(:categoryId IS NULL OR p.category.id = :categoryId)")
-    List<Product> searchAndFilterProducts(@Param("keyword")String keyword,
+    Page<Product> searchAndFilterProducts(@Param("keyword")String keyword,
                                           @Param("maxPrice")BigDecimal maxPrice,
-                                          @Param("categoryId")Long categoryId);
+                                          @Param("categoryId")Long categoryId,
+                                          Pageable pageable);
+
 }

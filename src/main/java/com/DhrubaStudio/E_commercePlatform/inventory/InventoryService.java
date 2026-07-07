@@ -2,7 +2,13 @@ package com.DhrubaStudio.E_commercePlatform.inventory;
 
 import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductRequestDTO;
 import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductResponseDTO;
+import com.DhrubaStudio.E_commercePlatform.inventory.dto.PagedProductResponseDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -82,18 +88,30 @@ public class InventoryService {
         return createProductResponseDTO(updatedProduct);
     }
 
-    public List<ProductResponseDTO> searchProducts(String keyword, BigDecimal maxPrice, Long categoryId) {
+    public PagedProductResponseDTO<ProductResponseDTO> searchProducts(String keyword, BigDecimal maxPrice,
+                                                                      Long categoryId, int pageNo, int pageSize,
+                                                                      String sortBy, String sortDir) {
 
-        List<Product> rawProducts = productRepository.searchAndFilterProducts(keyword, maxPrice, categoryId);
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+        Page<Product> productPage = productRepository.searchAndFilterProducts(keyword, maxPrice, categoryId, pageable);
 
         List<ProductResponseDTO> responseDTOs = new ArrayList<>();
 
-        for (Product product : rawProducts) {
-            ProductResponseDTO dto = createProductResponseDTO(product);
-            responseDTOs.add(dto);
+        for (Product product : productPage.getContent()) {
+            responseDTOs.add(createProductResponseDTO(product));
         }
 
-        return responseDTOs;
+        return new PagedProductResponseDTO<>(
+                responseDTOs,
+                productPage.getNumber(),
+                productPage.getSize(),
+                productPage.getTotalElements(),
+                productPage.getTotalPages(),
+                productPage.isLast()
+        );
     }
 
 

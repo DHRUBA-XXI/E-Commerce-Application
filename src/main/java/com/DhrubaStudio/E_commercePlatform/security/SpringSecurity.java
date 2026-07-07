@@ -47,6 +47,7 @@ public class SpringSecurity {
                         .requestMatchers("/inventory/categories/**").hasRole("ADMINISTRATOR")
                         .requestMatchers(HttpMethod.POST, "/inventory/products/**").hasRole("ADMINISTRATOR")
                         .requestMatchers(HttpMethod.PUT, "/inventory/products/**").hasRole("ADMINISTRATOR")
+                        .requestMatchers(HttpMethod.PUT, "/orders/*/status").hasRole("ADMINISTRATOR")
 
                         .requestMatchers("/orders/**").authenticated()
 
