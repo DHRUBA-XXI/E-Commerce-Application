@@ -1,8 +1,6 @@
 package com.DhrubaStudio.E_commercePlatform.inventory;
 
-import com.DhrubaStudio.E_commercePlatform.inventory.dto.PagedProductResponseDTO;
-import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductRequestDTO;
-import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductResponseDTO;
+import com.DhrubaStudio.E_commercePlatform.inventory.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,17 +21,17 @@ public class InventoryController {
     }
 
     @GetMapping("/categories")
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
 
-        List<Category> categories = inventoryService.getAllCategories();
+        List<CategoryResponseDTO> categories = inventoryService.getAllCategories();
 
         return new ResponseEntity<>(categories, HttpStatus.OK);
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<?> CreateCategory(@RequestBody Category category) {
+    public ResponseEntity<CategoryResponseDTO> CreateCategory(@RequestBody CategoryRequestDTO request) {
 
-        Category newCategory = inventoryService.createCategory(category);
+        CategoryResponseDTO newCategory = inventoryService.createCategory(request);
 
         return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
     }

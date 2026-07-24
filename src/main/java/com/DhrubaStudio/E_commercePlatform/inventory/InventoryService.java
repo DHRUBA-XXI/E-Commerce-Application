@@ -1,8 +1,6 @@
 package com.DhrubaStudio.E_commercePlatform.inventory;
 
-import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductRequestDTO;
-import com.DhrubaStudio.E_commercePlatform.inventory.dto.ProductResponseDTO;
-import com.DhrubaStudio.E_commercePlatform.inventory.dto.PagedProductResponseDTO;
+import com.DhrubaStudio.E_commercePlatform.inventory.dto.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,17 +24,28 @@ public class InventoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    public Category createCategory(Category category) {
+    public CategoryResponseDTO createCategory(CategoryRequestDTO request) {
 
-        Category existingCategory = categoryRepository.findByName(category.getName()).orElse(null);
+        Category existingCategory = categoryRepository.findByName(request.getName()).orElse(null);
         if (existingCategory != null) {
-            throw new IllegalArgumentException("Category with name " + category.getName() + " already exists.");
+            throw new IllegalArgumentException("Category with name " + request.getName() + " already exists.");
         }
-        return categoryRepository.save(category);
+
+        Category category = new Category(request.getName(), request.getDescription());
+        Category savedCategory = categoryRepository.save(category);
+
+        return new CategoryResponseDTO(savedCategory.getId(), savedCategory.getName(), savedCategory.getDescription());
     }
 
-    public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryResponseDTO> getAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+        List<CategoryResponseDTO> responseDTOs = new ArrayList<>();
+
+        for (Category category : categories) {
+            responseDTOs.add(new CategoryResponseDTO(category.getId(), category.getName(), category.getDescription()));
+        }
+
+        return responseDTOs;
     }
 
     public Product createProduct(ProductRequestDTO request) {
