@@ -1,9 +1,10 @@
 package com.DhrubaStudio.E_commercePlatform.order;
+import com.DhrubaStudio.E_commercePlatform.cart.Cart;
+import com.DhrubaStudio.E_commercePlatform.cart.CartItem;
+import com.DhrubaStudio.E_commercePlatform.cart.CartService;
 import com.DhrubaStudio.E_commercePlatform.inventory.Product;
 import com.DhrubaStudio.E_commercePlatform.inventory.ProductRepository;
-import com.DhrubaStudio.E_commercePlatform.order.dto.OrderItemRequestDTO;
 import com.DhrubaStudio.E_commercePlatform.order.dto.OrderItemResponseDTO;
-import com.DhrubaStudio.E_commercePlatform.order.dto.OrderRequestDTO;
 import com.DhrubaStudio.E_commercePlatform.order.dto.OrderResponseDTO;
 import com.DhrubaStudio.E_commercePlatform.user.User;
 import com.DhrubaStudio.E_commercePlatform.user.UserRepository;
@@ -23,37 +24,44 @@ public class OrderService {
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final CartService cartService;
 
     @Autowired
     public OrderService(UserRepository userRepository,
                         ProductRepository productRepository,
-                        OrderRepository orderRepository) {
+                        OrderRepository orderRepository,
+                        CartService cartService) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
+        this.cartService = cartService;
     }
 
     @Transactional
-    public Order processCheckout(String email,OrderRequestDTO request) {
+    public Order processCheckout(String email) {
 
         User buyer = userRepository.findByEmail(email).orElse(null);
         if(buyer == null){
             throw new IllegalArgumentException("User: " + email  + " not found.");
         }
-
         if(!buyer.getCustomerProfile().isProfileComplete()) {
             throw new IllegalStateException("User: " + email + " profile data is incomplete.");
+        }
+
+        Cart cart = cartService.getCart(email);
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Cannot process checkout. Your cart is empty.");
         }
 
         Order order = new Order();
         order.setUser(buyer);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(Order.OrderStatus.PROCESSING);
+
         BigDecimal totalOrderPrice = BigDecimal.ZERO;
 
-        for(OrderItemRequestDTO item : request.getItems()) {
+        for(CartItem item : cart.getItems()) {
             Product product = productRepository.findById(item.getProductId()).orElse(null);
-
             if(product == null){
                 throw new IllegalArgumentException("Product ID: " + item.getProductId() + " not found.");
             }
@@ -77,7 +85,11 @@ public class OrderService {
         }
 
         order.setTotalAmount(totalOrderPrice);
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+
+        cartService.clearCart(email);
+
+        return savedOrder;
     }
 
     public List<OrderResponseDTO> getOrderHistory(String email) {

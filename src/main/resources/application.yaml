@@ -18,6 +18,14 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: ${REDIS_PASSWORD:password}
+      repositories:
+        enabled: true
+
 server:
   port: 8080
   servlet:

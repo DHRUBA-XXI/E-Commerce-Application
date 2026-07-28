@@ -1,6 +1,5 @@
 package com.DhrubaStudio.E_commercePlatform.order;
 
-import com.DhrubaStudio.E_commercePlatform.order.dto.OrderRequestDTO;
 import com.DhrubaStudio.E_commercePlatform.order.dto.OrderResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,11 +22,10 @@ public class OrderController {
      }
 
      @PostMapping("/checkout")
-     public ResponseEntity<?> checkout(@AuthenticationPrincipal UserDetails userDetails,
-                                       @RequestBody OrderRequestDTO orderRequestDTO) {
-
+     public ResponseEntity<?> checkout(@AuthenticationPrincipal UserDetails userDetails) {
          String email = userDetails.getUsername();
-         Order savedOrder = orderService.processCheckout(email,orderRequestDTO);
+
+         Order savedOrder = orderService.processCheckout(email);
          String message = "Checkout successful. Order ID: "+ savedOrder.getId() +
                      " .Total Amount: "+ savedOrder.getTotalAmount();
 
