@@ -1,11 +1,13 @@
 package com.DhrubaStudio.E_commercePlatform.user;
-
 import com.DhrubaStudio.E_commercePlatform.user.dto.ProfileUpdateRequestDTO;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -20,12 +22,14 @@ public class UserService {
 
     @Transactional
     public User registerCustomer(User user) {
+        log.info("Attempting to register new customer with email: {}", user.getEmail());
 
         if(userRepository.existsByEmail(user.getEmail())) {
+            log.warn("Registration failed. Email {} is already in use.", user.getEmail());
             throw new IllegalArgumentException("A user with this email already exists.");
         }
-
         if(userRepository.existsByPhoneNumber(user.getPhoneNumber())) {
+            log.warn("Registration failed. Phone number {} is already in use.", user.getPhoneNumber());
             throw new IllegalArgumentException("A user with this contact number already exists.");
         }
 
@@ -37,24 +41,30 @@ public class UserService {
         newProfile.setUser(user);
         user.setCustomerProfile(newProfile);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        log.info("Successfully registered new customer with ID: {}", savedUser.getId());
+
+        return savedUser;
     }
 
     @Transactional
-    public User updateCustomerProfile(String email,ProfileUpdateRequestDTO request) {
+    public User updateCustomerProfile(String email, ProfileUpdateRequestDTO request) {
+        log.info("Updating profile details for user: {}", email);
 
         User user = userRepository.findByEmail(email).orElse(null);
         if(user == null) {
-            throw new IllegalArgumentException("User: "+ email +"not found.");
+            log.error("Profile update failed. User {} not found in database.", email);
+            throw new IllegalArgumentException("User: "+ email +" not found.");
         }
 
         CustomerProfile profile = user.getCustomerProfile();
-
         profile.setFirstName(request.getFirstName());
         profile.setLastName(request.getLastName());
         profile.setShippingAddress(request.getAddress());
 
-        return userRepository.save(user);
-    }
+        User updatedUser = userRepository.save(user);
+        log.info("Successfully updated profile for user: {}", email);
 
+        return updatedUser;
+    }
 }

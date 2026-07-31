@@ -26,6 +26,18 @@ spring:
       repositories:
         enabled: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:YOUR_USERNAME_HERE}
+    password: ${MAIL_PASSWORD:YOUR_PASSWORD_HERE}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 server:
   port: 8080
   servlet:

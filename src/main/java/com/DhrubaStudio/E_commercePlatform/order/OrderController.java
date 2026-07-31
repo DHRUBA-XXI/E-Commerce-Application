@@ -32,6 +32,12 @@ public class OrderController {
          return new ResponseEntity<>(message, HttpStatus.CREATED);
      }
 
+    @PostMapping("/{orderId}/mock-payment")
+    public ResponseEntity<?> mockPaymentWebhook(@PathVariable Long orderId) {
+        orderService.confirmOrderPayment(orderId);
+        return new ResponseEntity<>("Payment confirmed for Order ID: " + orderId + ". Email receipt sent!", HttpStatus.OK);
+    }
+
     @GetMapping("/orderHistory")
     public ResponseEntity<?> getUserOrderHistory(@AuthenticationPrincipal UserDetails userDetails) {
 
