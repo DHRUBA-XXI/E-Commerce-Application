@@ -180,14 +180,10 @@ public class OrderService {
 
     public List<OrderResponseDTO> getOrderHistory(String email) {
         log.debug("Fetching order history for user: {}", email);
-        User user = userRepository.findByEmail(email).orElse(null);
-        if(user == null){
-            log.error("Failed to fetch order history. User {} not found.", email);
-            throw new IllegalArgumentException("User: " + email + " not found.");
-        }
+
+        List<Order> orders = orderRepository.findCompleteOrderHistoryByEmail(email);
 
         List<OrderResponseDTO> responseList = new ArrayList<>();
-        List<Order> orders = orderRepository.findByUserId(user.getId());
 
         for (Order order : orders) {
             List<OrderItemResponseDTO> items = new ArrayList<>();
@@ -208,5 +204,29 @@ public class OrderService {
 
         log.debug("Returned {} historical orders for user: {}", responseList.size(), email);
         return responseList;
+    }
+
+    @Transactional
+    public void updateOrderStatus(Long orderId, String requestedStatus) {
+        log.info("An Admin attempting to update status for Order ID: {} to {}", orderId, requestedStatus);
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> {
+                    log.error("Order status update failed. Order ID {} not found.", orderId);
+                    return new IllegalArgumentException("Order ID " + orderId + " not found.");
+                });
+
+        Order.OrderStatus newStatus;
+        try {
+            newStatus = Order.OrderStatus.valueOf(requestedStatus.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid status requested: {}", requestedStatus);
+            throw new IllegalArgumentException("Invalid status: " + requestedStatus +
+                    ". Valid statuses are: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED.");
+        }
+
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+        log.info("Successfully updated Order ID {} to {}", orderId, newStatus.name());
     }
 }

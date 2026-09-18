@@ -1,6 +1,7 @@
 package com.DhrubaStudio.E_commercePlatform.order;
 
 import com.DhrubaStudio.E_commercePlatform.order.dto.OrderResponseDTO;
+import com.DhrubaStudio.E_commercePlatform.order.dto.OrderStatusUpdateRequestDTO;
 import com.DhrubaStudio.E_commercePlatform.order.dto.PaymentVerificationDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,13 @@ public class OrderController {
          List<OrderResponseDTO> history = orderService.getOrderHistory(email);
 
          return new ResponseEntity<>(history, HttpStatus.OK);
+    }
+
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<?> updateOrderStatus(@PathVariable Long orderId,
+                                               @RequestBody OrderStatusUpdateRequestDTO request) {
+        orderService.updateOrderStatus(orderId, request.getStatus());
+        return new ResponseEntity<>("Order ID: " + orderId + " , successfully updated to: " + request.getStatus().toUpperCase(), HttpStatus.OK);
     }
 
 }
