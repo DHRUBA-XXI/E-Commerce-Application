@@ -38,6 +38,9 @@ public class Order {
     @Column(nullable = false)
     private BigDecimal totalAmount;
 
+    @Column(name = "razorpay_order_id")
+    private String razorpayOrderId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
@@ -51,10 +54,12 @@ public class Order {
 
     public Order() {}
 
-    public Order(User user, LocalDateTime orderDate, BigDecimal totalAmount, OrderStatus status) {
+    public Order(User user, LocalDateTime orderDate,
+                 BigDecimal totalAmount, String razorpayOrderId, OrderStatus status) {
         this.user = user;
         this.orderDate = orderDate;
         this.totalAmount = totalAmount;
+        this.razorpayOrderId = razorpayOrderId;
         this.status = status;
     }
 
@@ -91,6 +96,14 @@ public class Order {
 
     public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
+    }
+
+    public String getRazorpayOrderId() {
+        return razorpayOrderId;
+    }
+
+    public void setRazorpayOrderId(String razorpayOrderId) {
+        this.razorpayOrderId = razorpayOrderId;
     }
 
     public OrderStatus getStatus() {

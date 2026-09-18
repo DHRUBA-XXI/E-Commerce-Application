@@ -29,6 +29,10 @@ security:
   jwt:
     secret-key:
 
+razorpay:
+  key-id: "YOUR_TEST_KEY"
+  key-secret: "YOUR_TEST_SECRET"
+
 logging:
   level:
     root: INFO

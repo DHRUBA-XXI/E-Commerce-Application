@@ -1,6 +1,8 @@
 package com.DhrubaStudio.E_commercePlatform.order;
 
 import com.DhrubaStudio.E_commercePlatform.order.dto.OrderResponseDTO;
+import com.DhrubaStudio.E_commercePlatform.order.dto.PaymentVerificationDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +29,16 @@ public class OrderController {
 
          Order savedOrder = orderService.processCheckout(email);
          String message = "Checkout successful. Order ID: "+ savedOrder.getId() +
-                     " .Total Amount: "+ savedOrder.getTotalAmount();
+                 "\nTotal amount: "+ savedOrder.getTotalAmount() +
+                 "\nRazorpay Order ID: " + savedOrder.getRazorpayOrderId();
 
          return new ResponseEntity<>(message, HttpStatus.CREATED);
      }
 
-    @PostMapping("/{orderId}/mock-payment")
-    public ResponseEntity<?> mockPaymentWebhook(@PathVariable Long orderId) {
-        orderService.confirmOrderPayment(orderId);
-        return new ResponseEntity<>("Payment confirmed for Order ID: " + orderId + ". Email receipt sent!", HttpStatus.OK);
+    @PostMapping("/verify-payment")
+    public ResponseEntity<?> verifyPayment(@RequestBody PaymentVerificationDTO verificationDTO) {
+        orderService.verifyRazorpayPayment(verificationDTO);
+        return new ResponseEntity<>("Payment verified and confirmed for your order ! Receipt has been sent to your email.", HttpStatus.OK);
     }
 
     @GetMapping("/orderHistory")

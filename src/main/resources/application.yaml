@@ -22,7 +22,7 @@ spring:
     redis:
       host: 127.0.0.1
       port: 6379
-      password: ${REDIS_PASSWORD:password}
+      password: "REDIS_PASSWORD"
       repositories:
         enabled: true
 
@@ -45,7 +45,11 @@ server:
 
 security:
   jwt:
-    secret-key: ${SECRET_KEY_FOR_JWT_SIGNING}
+    secret-key: "SECRET_KEY_FOR_JWT_SIGNING"
+
+razorpay:
+  key-id: "YOUR_TEST_KEY"
+  key-secret: "YOUR_TEST_SECRET"
 
 logging:
   level:

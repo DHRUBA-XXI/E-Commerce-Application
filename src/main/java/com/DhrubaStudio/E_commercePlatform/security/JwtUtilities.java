@@ -44,8 +44,7 @@ public class JwtUtilities {
                 .subject(subject)
                 .header().empty().add("typ", "JWT").and()
                 .issuedAt(new Date(System.currentTimeMillis()))
-                // Upgraded to 10 hours for e-commerce browsing
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 8))
                 .signWith(signingKey)
                 .compact();
     }
